@@ -1,0 +1,91 @@
+$version 1.0
+
+attr active = Application::Application;
+attr callStackMonitor_Show = false;
+attr codeColSelect = false;
+attr codeFirstPos = <0,0>;
+attr codeInspector = Application::Application.DownSlot;
+attr codeSelEnd = <0,0>;
+attr codeSelStart = <0,0>;
+attr connectInspectors = false;
+attr debug_TrackUpdates = false;
+attr extractDoc_ClassOverview = true;
+attr extractDoc_Destination = ./HtmlDoc;
+attr extractDoc_IgnoreAccessors = true;
+attr extractDoc_IgnoreMembers = true;
+attr extractDoc_Profiles = false;
+attr extractDoc_Title = Documentation;
+attr extractDoc_Variants = false;
+attr generateClut_ReservedColors = 0;
+attr heapMonitor_Show = false;
+attr language = Default;
+attr profile = NxpLpc;
+attr profilerMonitor_Show = false;
+attr search_CaseSensitive = false;
+attr search_IgnoreDescription = false;
+attr search_IgnoreMosaic = false;
+attr search_LimitToComposer = false;
+attr search_WholeWords = false;
+attr search_WildCards = false;
+
+view Project
+{
+  attr enableWireMode = false;
+  attr scrollTo = <-7,-7>;
+  attr zoom = 1.0;
+}
+
+view unit Application
+{
+  attr codeColSelect = false;
+  attr codeFirstPos = <0,0>;
+  attr codeInspector = Inline;
+  attr codeSelEnd = <0,0>;
+  attr codeSelStart = <0,0>;
+  attr enableWireMode = false;
+  attr scrollTo = <-7,-295>;
+  attr zoom = 1.0;
+}
+
+view class Application::Application
+{
+  attr codeColSelect = false;
+  attr codeFirstPos = <0,0>;
+  attr codeInspector = DownSlot;
+  attr codeSelEnd = <0,0>;
+  attr codeSelStart = <0,0>;
+  attr enableWireMode = false;
+  attr scrollTo = <-7,-103>;
+  attr zoom = 1.0;
+}
+
+view class Application::Custom
+{
+  attr enableWireMode = false;
+  attr scrollTo = <-7,-7>;
+  attr zoom = 1.0;
+}
+
+view class Application::DeviceClass
+{
+  attr codeColSelect = false;
+  attr codeFirstPos = <0,0>;
+  attr codeInspector = UpdateGaugeValue;
+  attr codeSelEnd = <23,4>;
+  attr codeSelStart = <23,4>;
+  attr enableWireMode = false;
+  attr scrollTo = <-122,89>;
+  attr zoom = 1.0;
+}
+
+view class Core::KeyPressHandler
+{
+  attr codeColSelect = false;
+  attr codeFirstPos = <0,29>;
+  attr codeInspector = HandleEvent;
+  attr codeSelEnd = <0,0>;
+  attr codeSelStart = <0,0>;
+  attr enableWireMode = false;
+  attr scrollTo = <-7,-7>;
+  attr zoom = 1.0;
+}
