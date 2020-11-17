@@ -119,6 +119,7 @@ int DeviceDriver_ProcessData( void );
 *******************************************************************************/
 void DeviceDriver_SetLedStatus( XInt32 aValue );
 
+void DeviceDriver_SetRedLedStatus( XInt32 aValue );
 
 /*******************************************************************************
 * FUNCTION:
@@ -133,6 +134,7 @@ void DeviceDriver_SetLedStatus( XInt32 aValue );
 *******************************************************************************/
 void DeviceDriver_PrintMessage( XString aText );
 
+void DeviceDriver_UpdateONLEDs( XInt32 aValue );
 
 /*******************************************************************************
 * FUNCTION:

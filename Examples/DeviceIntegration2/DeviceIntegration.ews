@@ -3,10 +3,10 @@ $version 1.0
 attr active = Application::Custom;
 attr callStackMonitor_Show = false;
 attr codeColSelect = false;
-attr codeFirstPos = <0,0>;
-attr codeInspector = Application::Custom.Slot;
-attr codeSelEnd = <0,0>;
-attr codeSelStart = <0,0>;
+attr codeFirstPos = <0,2>;
+attr codeInspector = Application::Custom.ChangeLED;
+attr codeSelEnd = <30,14>;
+attr codeSelStart = <30,14>;
 attr connectInspectors = false;
 attr debug_TrackUpdates = false;
 attr extractDoc_ClassOverview = true;
@@ -43,7 +43,7 @@ view unit Application
   attr codeSelEnd = <0,0>;
   attr codeSelStart = <0,0>;
   attr enableWireMode = false;
-  attr scrollTo = <-7,-295>;
+  attr scrollTo = <-103,-295>;
   attr zoom = 1.0;
 }
 
@@ -51,34 +51,34 @@ view class Application::Application
 {
   attr codeColSelect = false;
   attr codeFirstPos = <0,0>;
-  attr codeInspector = onCounterEvent;
-  attr codeSelEnd = <31,0>;
-  attr codeSelStart = <25,0>;
+  attr codeInspector = SlotHelloWorld;
+  attr codeSelEnd = <0,0>;
+  attr codeSelStart = <49,2>;
   attr enableWireMode = false;
-  attr scrollTo = <26,-88>;
+  attr scrollTo = <-70,-88>;
   attr zoom = 1.0;
 }
 
 view class Application::Custom
 {
   attr codeColSelect = false;
-  attr codeFirstPos = <0,0>;
-  attr codeInspector = Slot;
-  attr codeSelEnd = <0,0>;
-  attr codeSelStart = <0,0>;
+  attr codeFirstPos = <0,2>;
+  attr codeInspector = ChangeLED;
+  attr codeSelEnd = <30,14>;
+  attr codeSelStart = <30,14>;
   attr enableWireMode = false;
-  attr scrollTo = <-124,-148>;
-  attr zoom = 1.0;
+  attr scrollTo = <-168,-107>;
+  attr zoom = 1.25;
 }
 
 view class Application::DeviceClass
 {
   attr codeColSelect = false;
-  attr codeFirstPos = <0,0>;
-  attr codeInspector = UpdateTouchSwitch;
-  attr codeSelEnd = <42,8>;
-  attr codeSelStart = <42,8>;
+  attr codeFirstPos = <0,32>;
+  attr codeInspector = UpdateOnLED;
+  attr codeSelEnd = <29,42>;
+  attr codeSelStart = <4,42>;
   attr enableWireMode = false;
-  attr scrollTo = <-7,185>;
+  attr scrollTo = <-7,-199>;
   attr zoom = 1.0;
 }

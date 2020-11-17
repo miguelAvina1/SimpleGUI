@@ -44,6 +44,7 @@
 
 #include "_CoreGroup.h"
 #include "_CorePropertyObserver.h"
+#include "_CoreSimpleTouchHandler.h"
 #include "_ViewsImage.h"
 #include "_ViewsText.h"
 #include "_WidgetSetGauge.h"
@@ -115,6 +116,12 @@ EW_DEFINE_FIELDS( ApplicationCustom, CoreGroup )
   EW_OBJECT  ( TouchButton,     ViewsImage )
   EW_OBJECT  ( HardSwitch,      CorePropertyObserver )
   EW_OBJECT  ( TouchSwitch,     CorePropertyObserver )
+  EW_OBJECT  ( SimpleTouchHandler, CoreSimpleTouchHandler )
+  EW_OBJECT  ( OFFLED,          ViewsImage )
+  EW_OBJECT  ( REDLED,          ViewsImage )
+  EW_OBJECT  ( GREENLED,        ViewsImage )
+  EW_OBJECT  ( BLUELED,         ViewsImage )
+  EW_VARIABLE( LED_ON,          XInt32 )
 EW_END_OF_FIELDS( ApplicationCustom )
 
 /* Virtual Method Table (VMT) for the class : 'Application::Custom' */
@@ -152,6 +159,9 @@ void ApplicationCustom_Slot( ApplicationCustom _this, XObject sender );
 
 /* 'C' function for method : 'Application::Custom.Slot1()' */
 void ApplicationCustom_Slot1( ApplicationCustom _this, XObject sender );
+
+/* 'C' function for method : 'Application::Custom.ChangeLED()' */
+void ApplicationCustom_ChangeLED( ApplicationCustom _this, XObject sender );
 
 #ifdef __cplusplus
   }

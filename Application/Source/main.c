@@ -1,41 +1,41 @@
 /*******************************************************************************
-*
-* E M B E D D E D   W I Z A R D   P R O J E C T
-*
-*                                                Copyright (c) TARA Systems GmbH
-*                                    written by Paul Banach and Manfred Schweyer
-*
-********************************************************************************
-*
-* This software is delivered "as is" and shows the usage of other software
-* components. It is provided as an example software which is intended to be
-* modified and extended according to particular requirements.
-*
-* TARA Systems hereby disclaims all warranties and conditions with regard to the
-* software, including all implied warranties and conditions of merchantability
-* and non-infringement of any third party IPR or other rights which may result
-* from the use or the inability to use the software.
-*
-********************************************************************************
-*
-* DESCRIPTION:
-*   This file implements the main.c module for running Embedded Wizard
-*   generated GUI applications on a dedicated target with or without the usage
-*   of an operating system.
-*
-*   Important: Please be aware that every Embedded Wizard GUI application
-*   requires the execution in a single GUI task!
-*   If you are working with an operating system and your software is using
-*   several threads/tasks, please take care to access your GUI application
-*   only within the context of your GUI thread/task. Use operating system
-*   services to exchange data or events between the GUI thread/task and other
-*   worker threads/tasks.
-*
-*   For more information concerning the integration of an Embedded Wizard
-*   generated GUI application into your main application, please see
-*   https://doc.embedded-wizard.de/main-loop
-*
-*******************************************************************************/
+ *
+ * E M B E D D E D   W I Z A R D   P R O J E C T
+ *
+ *                                                Copyright (c) TARA Systems GmbH
+ *                                    written by Paul Banach and Manfred Schweyer
+ *
+ ********************************************************************************
+ *
+ * This software is delivered "as is" and shows the usage of other software
+ * components. It is provided as an example software which is intended to be
+ * modified and extended according to particular requirements.
+ *
+ * TARA Systems hereby disclaims all warranties and conditions with regard to the
+ * software, including all implied warranties and conditions of merchantability
+ * and non-infringement of any third party IPR or other rights which may result
+ * from the use or the inability to use the software.
+ *
+ ********************************************************************************
+ *
+ * DESCRIPTION:
+ *   This file implements the main.c module for running Embedded Wizard
+ *   generated GUI applications on a dedicated target with or without the usage
+ *   of an operating system.
+ *
+ *   Important: Please be aware that every Embedded Wizard GUI application
+ *   requires the execution in a single GUI task!
+ *   If you are working with an operating system and your software is using
+ *   several threads/tasks, please take care to access your GUI application
+ *   only within the context of your GUI thread/task. Use operating system
+ *   services to exchange data or events between the GUI thread/task and other
+ *   worker threads/tasks.
+ *
+ *   For more information concerning the integration of an Embedded Wizard
+ *   generated GUI application into your main application, please see
+ *   https://doc.embedded-wizard.de/main-loop
+ *
+ *******************************************************************************/
 
 #include "ewmain.h"
 #include "ewrte.h"
@@ -66,18 +66,18 @@
 
 #if EW_USE_FREE_RTOS == 1
 
-  #include "FreeRTOS.h"
-  #include "task.h"
-  #include "semphr.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
 
 
-  #define semtstSTACK_SIZE    configMINIMAL_STACK_SIZE * 10
-  #define sensorTaskSTACK_SIZE    configMINIMAL_STACK_SIZE
+#define semtstSTACK_SIZE    configMINIMAL_STACK_SIZE * 10
+#define sensorTaskSTACK_SIZE    configMINIMAL_STACK_SIZE
 
 
 
-  static void GuiThread( void* arg );
-  static void SensingThread( void* arg );
+static void GuiThread( void* arg );
+static void SensingThread( void* arg );
 
 
 #endif
@@ -86,48 +86,48 @@
 #if EW_USE_FREE_RTOS == 0
 
 /*******************************************************************************
-* FUNCTION:
-*   main
-*
-* DESCRIPTION:
-*   The main function for running Embedded Wizard generated GUI applications on
-*   a dedicated target without using any operating system (bare metal).
-*
-* ARGUMENTS:
-*   None
-*
-* RETURN VALUE:
-*   Zero if successful.
-*
-*******************************************************************************/
+ * FUNCTION:
+ *   main
+ *
+ * DESCRIPTION:
+ *   The main function for running Embedded Wizard generated GUI applications on
+ *   a dedicated target without using any operating system (bare metal).
+ *
+ * ARGUMENTS:
+ *   None
+ *
+ * RETURN VALUE:
+ *   Zero if successful.
+ *
+ *******************************************************************************/
 int main( void )
 {
-  /* initialize system */
-  EwBspSystemInit();
+	/* initialize system */
+	EwBspSystemInit();
 
-  /* initialize console interface for debug messages */
-  EwBspConsoleInit();
+	/* initialize console interface for debug messages */
+	EwBspConsoleInit();
 
-  /* initialize Embedded Wizard application */
-  if ( EwInit() == 0 )
-    return 1;
+	/* initialize Embedded Wizard application */
+	if ( EwInit() == 0 )
+		return 1;
 
-  EwPrintSystemInfo();
+	EwPrintSystemInfo();
 
-  /* process the Embedded Wizard main loop */
-  while( EwProcess())
-    ;
+	/* process the Embedded Wizard main loop */
+	while( EwProcess())
+		;
 
-  /* de-initialize Embedded Wizard application */
-  EwDone();
+	/* de-initialize Embedded Wizard application */
+	EwDone();
 
-  /* restore console */
-  EwBspConsoleDone();
+	/* restore console */
+	EwBspConsoleDone();
 
-  /* terminate the system */
-  EwBspSystemDone();
+	/* terminate the system */
+	EwBspSystemDone();
 
-  return 0;
+	return 0;
 }
 
 #endif
@@ -168,57 +168,60 @@ typedef union {		// Payload from slave to master
 } i2c_payload_master_t;
 
 QueueHandle_t xQueueSensors = NULL;
+QueueHandle_t xQueueLEDs = NULL;
+
+
 uint8_t g_master_txBuff[3] = {0x01, 0x02, 0x03};
 
 
 /*******************************************************************************
-* FUNCTION:
-*   main
-*
-* DESCRIPTION:
-*   The main function for running Embedded Wizard generated GUI applications on
-*   a dedicated target using the FreeRTOS operating system.
-*
-* ARGUMENTS:
-*   None
-*
-* RETURN VALUE:
-*   None
-*
-*******************************************************************************/
+ * FUNCTION:
+ *   main
+ *
+ * DESCRIPTION:
+ *   The main function for running Embedded Wizard generated GUI applications on
+ *   a dedicated target using the FreeRTOS operating system.
+ *
+ * ARGUMENTS:
+ *   None
+ *
+ * RETURN VALUE:
+ *   None
+ *
+ *******************************************************************************/
 int main( void )
 {
-  BaseType_t retVal;
-  /* initialize system */
-  EwBspSystemInit();
+	BaseType_t retVal;
+	/* initialize system */
+ 	EwBspSystemInit();
 
-  /* initialize console interface for debug messages */
-  EwBspConsoleInit();
+	/* initialize console interface for debug messages */
+	EwBspConsoleInit();
 
-  /* create thread that drives the Embedded Wizard GUI application... */
-  EwPrint( "Create UI thread...                          " );
-  xTaskCreate( GuiThread, "EmWi_Task", semtstSTACK_SIZE, NULL, 1, NULL );
-  EwPrint( "[OK]\n" );
-
-
-  retVal = xTaskCreate( SensingThread, "Sensing_Task", sensorTaskSTACK_SIZE, NULL, 2, NULL );
-  if (retVal != pdPASS) {
-	  EwPrint( "Failed to create sensor task\n" );
-  }
-
-  xQueueSensors = xQueueCreate(5, sizeof(sensorsInfo));
+	/* create thread that drives the Embedded Wizard GUI application... */
+	EwPrint( "Create UI thread...                          " );
+	xTaskCreate( GuiThread, "EmWi_Task", semtstSTACK_SIZE, NULL, 1, NULL );
+	EwPrint( "[OK]\n" );
 
 
-  /* ...and start scheduler */
-  vTaskStartScheduler();
+	retVal = xTaskCreate( SensingThread, "Sensing_Task", sensorTaskSTACK_SIZE, NULL, 2, NULL );
+	if (retVal != pdPASS) {
+		EwPrint( "Failed to create sensor task\n" );
+	}
 
-  /* restore console */
-  EwBspConsoleDone();
+	xQueueSensors = xQueueCreate(5, sizeof(sensorsInfo));
+	xQueueLEDs = xQueueCreate(2, sizeof(uint8_t));
 
-  /* terminate the system */
-  EwBspSystemDone();
+	/* ...and start scheduler */
+	vTaskStartScheduler();
 
-  return 0;
+	/* restore console */
+	EwBspConsoleDone();
+
+	/* terminate the system */
+	EwBspSystemDone();
+
+	return 0;
 }
 
 static uint16_t get_0to100Scale(uint16_t rawVal) {
@@ -228,33 +231,33 @@ static uint16_t get_0to100Scale(uint16_t rawVal) {
 	return retVal;
 }
 /*******************************************************************************
-* FUNCTION:
-*   GuiThread
-*
-* DESCRIPTION:
-*   The EwThread processes the Embeded Wizard application.
-*
-* ARGUMENTS:
-*   arg - not used.
-*
-* RETURN VALUE:
-*   None.
-*
-*******************************************************************************/
+ * FUNCTION:
+ *   GuiThread
+ *
+ * DESCRIPTION:
+ *   The EwThread processes the Embeded Wizard application.
+ *
+ * ARGUMENTS:
+ *   arg - not used.
+ *
+ * RETURN VALUE:
+ *   None.
+ *
+ *******************************************************************************/
 static void GuiThread( void* arg )
 {
-  /* initialize Embedded Wizard application */
-  if ( EwInit() == 0 )
-    return;
+	/* initialize Embedded Wizard application */
+	if ( EwInit() == 0 )
+		return;
 
-  EwPrintSystemInfo();
+	EwPrintSystemInfo();
 
-  /* process the Embedded Wizard main loop */
-  while( EwProcess())
-    ;
+	/* process the Embedded Wizard main loop */
+	while( EwProcess())
+		;
 
-  /* de-initialize Embedded Wizard application */
-  EwDone();
+	/* de-initialize Embedded Wizard application */
+	EwDone();
 }
 
 
@@ -265,28 +268,56 @@ static void SensingThread( void* arg )
 
 	sensorsInfo sensorsData;
 	BaseType_t retVal;
-    i2c_master_config_t masterConfig;
+	i2c_master_config_t masterConfig;
 
-    i2c_payload_slave_t I2C_Payload_slave;
-    i2c_payload_master_t I2C_Payload_master;
-    status_t reVal        = kStatus_Fail;
+	i2c_payload_slave_t I2C_Payload_slave;
+	i2c_payload_master_t I2C_Payload_master;
+	status_t reVal        = kStatus_Fail;
 
-    I2C_Payload_master.data.leds_state.led_state_bit.red_led = 0U;
-    I2C_Payload_master.data.leds_state.led_state_bit.green_led = 0U;
-    I2C_Payload_master.data.leds_state.led_state_bit.blue_led = 1U;
+	I2C_Payload_master.data.leds_state.led_state_bit.red_led = 0U;
+	I2C_Payload_master.data.leds_state.led_state_bit.green_led = 0U;
+	I2C_Payload_master.data.leds_state.led_state_bit.blue_led = 0U;
 
 	srand(1); // Predefined seed
 
 	I2C_MasterGetDefaultConfig(&masterConfig);
-    masterConfig.baudRate_Bps = I2C_BAUDRATE;
+	masterConfig.baudRate_Bps = I2C_BAUDRATE;
 
-    I2C_MasterInit(I2C_MASTER, &masterConfig, I2C_MASTER_CLOCK_FREQUENCY);
+	I2C_MasterInit(I2C_MASTER, &masterConfig, I2C_MASTER_CLOCK_FREQUENCY);
 
-
+	uint8_t LED_On;
 	while(1) {
 		vTaskDelay(100);
 
+		if (uxQueueMessagesWaiting(xQueueLEDs) != 0) {
+			retVal = xQueueReceive(xQueueLEDs, (void *) &LED_On, 1);
+			if (retVal != pdPASS) {
+				EwPrint("Failed to read queue!\n");
+			}
 
+			I2C_Payload_master.data.leds_state.led_state_bit.red_led = 0U;
+			I2C_Payload_master.data.leds_state.led_state_bit.green_led = 0U;
+			I2C_Payload_master.data.leds_state.led_state_bit.blue_led = 0U;
+			switch (LED_On) {
+			case 0:
+				// Nada, REMOVE this
+				break;
+			case 1:
+				I2C_Payload_master.data.leds_state.led_state_bit.red_led = 1U;
+				break;
+
+			case 2:
+				I2C_Payload_master.data.leds_state.led_state_bit.green_led = 1U;
+				break;
+
+			case 3:
+				I2C_Payload_master.data.leds_state.led_state_bit.blue_led = 1U;
+
+				break;
+
+			}
+
+		}
 
 		if (kStatus_Success == I2C_MasterStart(I2C_MASTER, I2C_MASTER_SLAVE_ADDR_7BIT, kI2C_Write))
 		{
@@ -337,7 +368,7 @@ static void SensingThread( void* arg )
 
 
 
-  /* de-initialize Embedded Wizard application */
+	/* de-initialize Embedded Wizard application */
 
 }
 

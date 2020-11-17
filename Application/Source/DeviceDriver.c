@@ -58,6 +58,8 @@
 
 
 extern QueueHandle_t xQueueSensors;
+extern QueueHandle_t xQueueLEDs;
+
 
 #ifdef _ApplicationDeviceClass_
 
@@ -379,6 +381,18 @@ void DeviceDriver_SetLedStatus( XInt32 aValue )
     EwBspInOutLedOff();
 }
 
+uint8_t redLedStatus;
+void DeviceDriver_SetRedLedStatus ( XInt32 aValue ) {
+	BaseType_t retVal;
+
+	/*redLedStatus = aValue;
+	retVal = xQueueSendToFront(xQueueLEDs, (void *) &redLedStatus, 10);
+	if (retVal != pdPASS) {
+		EwPrint( "Failed to queue!\n");
+	}*/
+}
+
+
 
 /*******************************************************************************
 * FUNCTION:
@@ -394,10 +408,18 @@ void DeviceDriver_SetLedStatus( XInt32 aValue )
 void DeviceDriver_PrintMessage( XString aText )
 {
   /* just print the given 16bit string... */
-  EwPrint( "The string is: %S\n", aText );
+	EwPrint( "The string is: %S\n", aText );
 }
 
-
+void DeviceDriver_UpdateONLEDs ( XInt32 aValue ) {
+	BaseType_t retVal;
+	uint8_t LED_On;
+	LED_On = aValue;
+	retVal = xQueueSendToFront(xQueueLEDs, (void *) &LED_On, 10);
+	if (retVal != pdPASS) {
+		EwPrint( "Failed to queue!\n");
+	}
+}
 /*******************************************************************************
 * FUNCTION:
 *   DeviceDriver_SetTime

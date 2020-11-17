@@ -416,7 +416,7 @@ class DeviceClass
 
   // This method implements a device command that calls the underlying device driver \
   // to print the given string (e.g. via serial interface).
-  $rect <20,60,220,100>
+  $rect <20,-60,220,-20>
   method void CommandPrint( arg string aMessage )
   {
     // The following code is used during prototyping only. It simply returns
@@ -482,7 +482,7 @@ class DeviceClass
   // Example of a command to start an action on the device
   note group Note3
   {
-    attr Bounds = <10,10,470,110>;
+    attr Bounds = <20,-110,480,-10>;
   }
 
   // The property 'HardButtonCounter' represents a counter that is incremented by \
@@ -569,7 +569,7 @@ class DeviceClass
   // Example of an interface to modify a device setting
   note group Note10
   {
-    attr Bounds = <10,120,470,220>;
+    attr Bounds = <10,10,470,220>;
   }
 
   note arrow Note11
@@ -651,6 +651,86 @@ class DeviceClass
   // while the hardware button of the board is pressed.
   $rect <280,420,480,460>
   property bool TouchValue = false;
+
+  // This property represents the state of the LED mounted on the board.
+  $rect <30,100,230,140>
+  property bool RedLedStatus = false;
+
+  $rect <240,100,440,140>
+  onset RedLedStatus
+  {
+    // The property doesn't change -> nothing to do.
+    if ( pure RedLedStatus == value )
+      return;
+
+    // Remember the new value in the internal memory of the property.
+    pure RedLedStatus = value;
+
+    // For target code generation you will use your specific device API
+    // to change the affected value.
+    $if !$prototyper
+      native ( value )
+      {
+        DeviceDriver_SetRedLedStatus( value );
+      }
+    $endif
+
+    // Notify all associated property observers.
+    notifyobservers ^RedLedStatus;
+  }
+
+  // This method implements a device command that calls the underlying device driver \
+  // to print the given string (e.g. via serial interface).
+  $rect <220,-60,420,-20>
+  method void UpdateOnLED( arg int32 aValue )
+  {
+    // The following code is used during prototyping only. It simply returns
+    // a dummy value. No device specific API is used during prototyping.
+    $if $prototyper
+      /*
+         TO DO:
+
+         List all parameters of this method not used explicitly. This will
+         suppress the Chora warnings because of unused parameters.
+      */
+
+      aValue;
+
+
+    $endif
+
+    // For target code generation you will use your specific device API
+    // to perform the command in the device.
+    $if !$prototyper
+      /*
+         TO DO:
+
+         The following variable declaration is reasonable for command methods
+         which return a value. It can be removed if the method is declared with
+         'void' as its return data type or if the return value is not obtained
+         from the native code.
+
+         Additionally you may need to adapt this declaration to the method's
+         return data type.
+      */
+      /*
+         TO DO:
+
+         The following native statement encloses the code to communicate with
+         your device API. Chora expects here all variables accessed from the
+         native code to be explicitly listed in the head of the native statement.
+
+         Write here all parameters and localy declared variables you intend to
+         access from the native code.
+      */
+
+      native ( aValue )
+      {
+        DeviceDriver_UpdateONLEDs( aValue );
+      }
+
+    $endif
+  }
 }
 
 // This object represents an instance of the device interface implemented in the \
@@ -757,7 +837,7 @@ class Custom : Core::Group
   $rect <510,140,760,180>
   object Core::PropertyObserver TouchSwitch
   {
-    preset OnEvent = Slot;
+    preset OnEvent = Slot1;
     preset Outlet = ^Application::Device.TouchValue;
   }
 
@@ -767,6 +847,78 @@ class Custom : Core::Group
     TouchButton.Visible = Device.TouchValue;
 
 
+  }
+
+  $rect <20,20,160,60>
+  object Core::SimpleTouchHandler SimpleTouchHandler
+  {
+    preset Point4 = <12,136>;
+    preset Point3 = <112,136>;
+    preset Point2 = <112,258>;
+    preset Point1 = <12,258>;
+    preset OnPress = ChangeLED;
+  }
+
+  $rect <20,-90,220,-50>
+  slot ChangeLED
+  {
+    sender; /* the method is called from the sender object */
+
+    var int32 led_value = LED_ON;
+
+    led_value = led_value + 1;
+
+    if (led_value > 3)
+      led_value = 0;
+
+    if (led_value == 0)
+      REDLED.Visible = false;
+      GREENLED.Visible = false;
+      BLUELED.Visible = false;
+    if (led_value == 1)
+      REDLED.Visible = true;
+    if (led_value == 2)
+      GREENLED.Visible = true;
+    if (led_value == 3)
+      BLUELED.Visible = true;
+
+    LED_ON = led_value;
+
+    Application::Device.UpdateOnLED(led_value);
+  }
+
+  $rect <230,-90,430,-50>
+  var int32 LED_ON = 0;
+
+  $rect <20,20,160,60>
+  object Views::Image OFFLED
+  {
+    preset Bounds = <25,149,98,250>;
+    preset Bitmap = Application::OFFLED;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image REDLED
+  {
+    preset Bounds = <21,140,101,258>;
+    preset Bitmap = Application::REDLED;
+    preset Visible = false;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image GREENLED
+  {
+    preset Bounds = <18,142,104,256>;
+    preset Bitmap = Application::GREENLED;
+    preset Visible = false;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image BLUELED
+  {
+    preset Bounds = <21,141,101,258>;
+    preset Bitmap = Application::BLUELED;
+    preset Visible = false;
   }
 
   $reorder Image 97
@@ -851,6 +1003,54 @@ $output false
 resource Resources::Bitmap Bitmap
 {
   attr bitmapfile FileName = C:\Users\migue\OneDrive\Documents\Embedded Wizard 10.00\LPCXpresso54628\Res\TouchButton.png;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <283,-80,483,-40>
+$output false
+resource Resources::Bitmap REDLED
+{
+  attr bitmapfile FileName = C:\Users\migue\OneDrive\Documents\Embedded Wizard 10.00\LPCXpresso54628\Res\REDLED.png;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <235,-23,435,17>
+$output false
+resource Resources::Bitmap GREENLED
+{
+  attr bitmapfile FileName = C:\Users\migue\OneDrive\Documents\Embedded Wizard 10.00\LPCXpresso54628\Res\GREENLED.png;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <513,-44,713,-4>
+$output false
+resource Resources::Bitmap BLUELED
+{
+  attr bitmapfile FileName = C:\Users\migue\OneDrive\Documents\Embedded Wizard 10.00\LPCXpresso54628\Res\BLUELED.png;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <570,-100,770,-60>
+$output false
+resource Resources::Bitmap OFFLED
+{
+  attr bitmapfile FileName = C:\Users\migue\OneDrive\Documents\Embedded Wizard 10.00\LPCXpresso54628\Res\OFFLED.png;
   attr bitmapformat Format = Native;
   attr framesize FrameSize;
   attr framedelay FrameDelay;

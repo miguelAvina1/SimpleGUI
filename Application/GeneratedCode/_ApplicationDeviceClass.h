@@ -128,6 +128,10 @@ void ApplicationDeviceClass__UpdateTouchSwitch( void* _this, XBool aNewValue );
 /* The following define announces the presence of the method Application::DeviceClass.UpdateTouchSwitch(). */
 #define _ApplicationDeviceClass__UpdateTouchSwitch_
 
+/* This method implements a device command that calls the underlying device driver 
+   to print the given string (e.g. via serial interface). */
+void ApplicationDeviceClass_UpdateOnLED( ApplicationDeviceClass _this, XInt32 aValue );
+
 /* Default onget method for the property 'HardButtonCounter' */
 XInt32 ApplicationDeviceClass_OnGetHardButtonCounter( ApplicationDeviceClass _this );
 

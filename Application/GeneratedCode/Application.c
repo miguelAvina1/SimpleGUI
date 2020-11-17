@@ -31,6 +31,7 @@
 #include "_CoreGroup.h"
 #include "_CoreKeyPressHandler.h"
 #include "_CorePropertyObserver.h"
+#include "_CoreSimpleTouchHandler.h"
 #include "_CoreSystemEvent.h"
 #include "_CoreSystemEventHandler.h"
 #include "_CoreView.h"
@@ -57,15 +58,15 @@
 /* Compressed strings for the language 'Default'. */
 static const unsigned int _StringsDefault0[] =
 {
-  0x00000158, /* ratio 62.79 % */
+  0x00000158, /* ratio 63.95 % */
   0xB8003300, 0x000EE452, 0x005D0683, 0x0DA00328, 0x010B3100, 0x71189190, 0x00838B62,
   0x03D000D2, 0x39000C20, 0x644E1514, 0x83000008, 0x00984581, 0x08800228, 0xA6001000,
   0x71D3A000, 0x1692C466, 0x98F94250, 0x9B1B8011, 0x40004530, 0x000D9112, 0x0E5E6FA3,
   0xA4149004, 0x4B4289D1, 0x92E94056, 0x639E9DA1, 0xE24CC222, 0x33C326D3, 0xD4D23D3C,
   0x4E27F498, 0x823D4494, 0x0853089C, 0x69363A80, 0x843A5596, 0x34AEDBE9, 0x492C8219,
   0xB5CD6D01, 0xA5C2DD4A, 0x4C2BB729, 0xFE195796, 0x00F259A4, 0x2000184A, 0xC0092E4B,
-  0x11274131, 0xE92CD8F1, 0xA3432FC0, 0xB15E9548, 0x636294EB, 0x663D6E94, 0x81B9435D,
-  0x3D46A4DF, 0xF7726CC2, 0x94A4C4E7, 0x00040729, 0x00000000
+  0x11274131, 0xE92CD8F1, 0xA3432FC0, 0xB15E9548, 0x636294EB, 0x663D6E94, 0x01B9435D,
+  0xEB3B954A, 0x034000E2, 0x17000D40, 0xB0014ADD, 0x80EFB284, 0x00000000
 };
 
 /* Constant values used in this 'C' module only. */
@@ -94,16 +95,24 @@ static const XStringRes _Const0015 = { _StringsDefault0, 0x0083 };
 static const XStringRes _Const0016 = { _StringsDefault0, 0x008A };
 static const XRect _Const0017 = {{ 360, 14 }, { 451, 64 }};
 static const XStringRes _Const0018 = { _StringsDefault0, 0x0098 };
-static const XRect _Const0019 = {{ 101, 4 }, { 360, 75 }};
+static const XRect _Const0019 = {{ 98, 4 }, { 357, 75 }};
 static const XStringRes _Const001A = { _StringsDefault0, 0x009F };
-static const XColor _Const001B = { 0x03, 0x33, 0x99, 0xFF };
+static const XColor _Const001B = { 0x02, 0x46, 0xD2, 0xFF };
 static const XRect _Const001C = {{ 138, 75 }, { 322, 242 }};
 static const XRect _Const001D = {{ 366, 83 }, { 444, 158 }};
 static const XRect _Const001E = {{ 372, 174 }, { 438, 249 }};
-static const XColor _Const001F = { 0x64, 0x81, 0xD3, 0xFF };
-static const XPoint _Const0020 = { -39, 12 };
-static const XPoint _Const0021 = { 0, 10 };
-static const XPoint _Const0022 = { 171, 151 };
+static const XPoint _Const001F = { 12, 136 };
+static const XPoint _Const0020 = { 112, 136 };
+static const XPoint _Const0021 = { 112, 258 };
+static const XPoint _Const0022 = { 12, 258 };
+static const XRect _Const0023 = {{ 25, 149 }, { 98, 250 }};
+static const XRect _Const0024 = {{ 21, 140 }, { 101, 258 }};
+static const XRect _Const0025 = {{ 18, 142 }, { 104, 256 }};
+static const XRect _Const0026 = {{ 21, 141 }, { 101, 258 }};
+static const XColor _Const0027 = { 0x64, 0x81, 0xD3, 0xFF };
+static const XPoint _Const0028 = { -39, 12 };
+static const XPoint _Const0029 = { 0, 10 };
+static const XPoint _Const002A = { 171, 151 };
 
 /* This is an inline code block. */
 /* include the device driver header file to get access for the device class */
@@ -567,6 +576,16 @@ void ApplicationDeviceClass__UpdateTouchSwitch( void* _this, XBool aNewValue )
   ApplicationDeviceClass_UpdateTouchSwitch((ApplicationDeviceClass)_this, aNewValue );
 }
 
+/* This method implements a device command that calls the underlying device driver 
+   to print the given string (e.g. via serial interface). */
+void ApplicationDeviceClass_UpdateOnLED( ApplicationDeviceClass _this, XInt32 aValue )
+{
+  /* Dummy expressions to avoid the 'C' warning 'unused argument'. */
+  EW_UNUSED_ARG( _this );
+
+  DeviceDriver_UpdateONLEDs( aValue );
+}
+
 /* Default onget method for the property 'HardButtonCounter' */
 XInt32 ApplicationDeviceClass_OnGetHardButtonCounter( ApplicationDeviceClass _this )
 {
@@ -667,6 +686,11 @@ void ApplicationCustom__Init( ApplicationCustom _this, XObject aLink, XHandle aA
   ViewsImage__Init( &_this->TouchButton, &_this->_XObject, 0 );
   CorePropertyObserver__Init( &_this->HardSwitch, &_this->_XObject, 0 );
   CorePropertyObserver__Init( &_this->TouchSwitch, &_this->_XObject, 0 );
+  CoreSimpleTouchHandler__Init( &_this->SimpleTouchHandler, &_this->_XObject, 0 );
+  ViewsImage__Init( &_this->OFFLED, &_this->_XObject, 0 );
+  ViewsImage__Init( &_this->REDLED, &_this->_XObject, 0 );
+  ViewsImage__Init( &_this->GREENLED, &_this->_XObject, 0 );
+  ViewsImage__Init( &_this->BLUELED, &_this->_XObject, 0 );
 
   /* Setup the VMT pointer */
   _this->_VMT = EW_CLASS( ApplicationCustom );
@@ -685,12 +709,28 @@ void ApplicationCustom__Init( ApplicationCustom _this, XObject aLink, XHandle aA
   ViewsImage_OnSetVisible( &_this->TactileSwitch, 0 );
   CoreRectView__OnSetBounds( &_this->TouchButton, _Const001E );
   ViewsImage_OnSetVisible( &_this->TouchButton, 0 );
+  CoreQuadView__OnSetPoint4( &_this->SimpleTouchHandler, _Const001F );
+  CoreQuadView__OnSetPoint3( &_this->SimpleTouchHandler, _Const0020 );
+  CoreQuadView__OnSetPoint2( &_this->SimpleTouchHandler, _Const0021 );
+  CoreQuadView__OnSetPoint1( &_this->SimpleTouchHandler, _Const0022 );
+  CoreRectView__OnSetBounds( &_this->OFFLED, _Const0023 );
+  CoreRectView__OnSetBounds( &_this->REDLED, _Const0024 );
+  ViewsImage_OnSetVisible( &_this->REDLED, 0 );
+  CoreRectView__OnSetBounds( &_this->GREENLED, _Const0025 );
+  ViewsImage_OnSetVisible( &_this->GREENLED, 0 );
+  CoreRectView__OnSetBounds( &_this->BLUELED, _Const0026 );
+  ViewsImage_OnSetVisible( &_this->BLUELED, 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->Image ), 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->PushButton ), 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->Text ), 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->Gauge ), 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->TactileSwitch ), 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->TouchButton ), 0 );
+  CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->SimpleTouchHandler ), 0 );
+  CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->OFFLED ), 0 );
+  CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->REDLED ), 0 );
+  CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->GREENLED ), 0 );
+  CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->BLUELED ), 0 );
   ViewsImage_OnSetBitmap( &_this->Image, EwLoadResource( &ApplicationCustomBackground, 
   ResourcesBitmap ));
   _this->PushButton.OnActivate = EwNewSlot( _this, ApplicationCustom_SlotMoveBack );
@@ -714,6 +754,13 @@ void ApplicationCustom__Init( ApplicationCustom _this, XObject aLink, XHandle aA
   CorePropertyObserver_OnSetOutlet( &_this->TouchSwitch, EwNewRef( EwGetAutoObject( 
   &ApplicationDevice, ApplicationDeviceClass ), ApplicationDeviceClass_OnGetTouchValue, 
   ApplicationDeviceClass_OnSetTouchValue ));
+  _this->SimpleTouchHandler.OnPress = EwNewSlot( _this, ApplicationCustom_ChangeLED );
+  ViewsImage_OnSetBitmap( &_this->OFFLED, EwLoadResource( &ApplicationOFFLED, ResourcesBitmap ));
+  ViewsImage_OnSetBitmap( &_this->REDLED, EwLoadResource( &ApplicationREDLED, ResourcesBitmap ));
+  ViewsImage_OnSetBitmap( &_this->GREENLED, EwLoadResource( &ApplicationGREENLED, 
+  ResourcesBitmap ));
+  ViewsImage_OnSetBitmap( &_this->BLUELED, EwLoadResource( &ApplicationBLUELED, 
+  ResourcesBitmap ));
 }
 
 /* Re-Initializer for the class 'Application::Custom' */
@@ -731,6 +778,11 @@ void ApplicationCustom__ReInit( ApplicationCustom _this )
   ViewsImage__ReInit( &_this->TouchButton );
   CorePropertyObserver__ReInit( &_this->HardSwitch );
   CorePropertyObserver__ReInit( &_this->TouchSwitch );
+  CoreSimpleTouchHandler__ReInit( &_this->SimpleTouchHandler );
+  ViewsImage__ReInit( &_this->OFFLED );
+  ViewsImage__ReInit( &_this->REDLED );
+  ViewsImage__ReInit( &_this->GREENLED );
+  ViewsImage__ReInit( &_this->BLUELED );
 }
 
 /* Finalizer method for the class 'Application::Custom' */
@@ -748,6 +800,11 @@ void ApplicationCustom__Done( ApplicationCustom _this )
   ViewsImage__Done( &_this->TouchButton );
   CorePropertyObserver__Done( &_this->HardSwitch );
   CorePropertyObserver__Done( &_this->TouchSwitch );
+  CoreSimpleTouchHandler__Done( &_this->SimpleTouchHandler );
+  ViewsImage__Done( &_this->OFFLED );
+  ViewsImage__Done( &_this->REDLED );
+  ViewsImage__Done( &_this->GREENLED );
+  ViewsImage__Done( &_this->BLUELED );
 
   /* Don't forget to deinitialize the super class ... */
   CoreGroup__Done( &_this->_Super );
@@ -782,13 +839,47 @@ void ApplicationCustom_Slot1( ApplicationCustom _this, XObject sender )
   ViewsImage_OnSetVisible( &_this->TouchButton, _this->Device->TouchValue );
 }
 
+/* 'C' function for method : 'Application::Custom.ChangeLED()' */
+void ApplicationCustom_ChangeLED( ApplicationCustom _this, XObject sender )
+{
+  XInt32 led_value;
+
+  /* Dummy expressions to avoid the 'C' warning 'unused argument'. */
+  EW_UNUSED_ARG( sender );
+
+  led_value = _this->LED_ON;
+  led_value = led_value + 1;
+
+  if ( led_value > 3 )
+    led_value = 0;
+
+  if ( led_value == 0 )
+    ViewsImage_OnSetVisible( &_this->REDLED, 0 );
+
+  ViewsImage_OnSetVisible( &_this->GREENLED, 0 );
+  ViewsImage_OnSetVisible( &_this->BLUELED, 0 );
+
+  if ( led_value == 1 )
+    ViewsImage_OnSetVisible( &_this->REDLED, 1 );
+
+  if ( led_value == 2 )
+    ViewsImage_OnSetVisible( &_this->GREENLED, 1 );
+
+  if ( led_value == 3 )
+    ViewsImage_OnSetVisible( &_this->BLUELED, 1 );
+
+  _this->LED_ON = led_value;
+  ApplicationDeviceClass_UpdateOnLED( EwGetAutoObject( &ApplicationDevice, ApplicationDeviceClass ), 
+  led_value );
+}
+
 /* Variants derived from the class : 'Application::Custom' */
 EW_DEFINE_CLASS_VARIANTS( ApplicationCustom )
 EW_END_OF_CLASS_VARIANTS( ApplicationCustom )
 
 /* Virtual Method Table (VMT) for the class : 'Application::Custom' */
-EW_DEFINE_CLASS( ApplicationCustom, CoreGroup, Device, Image, Image, Image, _None, 
-                 _None, "Application::Custom" )
+EW_DEFINE_CLASS( ApplicationCustom, CoreGroup, Device, Image, Image, Image, LED_ON, 
+                 LED_ON, "Application::Custom" )
   CoreRectView_initLayoutContext,
   CoreView_GetRoot,
   CoreGroup_Draw,
@@ -830,18 +921,18 @@ void ApplicationGauge_custom__Init( WidgetSetGaugeConfig _this )
   WidgetSetGaugeConfig_OnSetSwingElastic( _this, 0 );
   WidgetSetGaugeConfig_OnSetSwingDuration( _this, 300 );
   WidgetSetGaugeConfig_OnSetTrackLeftRoundedStart( _this, 1 );
-  WidgetSetGaugeConfig_OnSetTrackLeftColor( _this, _Const001F );
+  WidgetSetGaugeConfig_OnSetTrackLeftColor( _this, _Const0027 );
   WidgetSetGaugeConfig_OnSetTrackLeftThickness( _this, 21.000000f );
   WidgetSetGaugeConfig_OnSetTrackLeftRadius( _this, 70.000000f );
   WidgetSetGaugeConfig_OnSetNeedleMaxAngle( _this, -45.000000f );
   WidgetSetGaugeConfig_OnSetNeedleMinAngle( _this, 225.000000f );
-  WidgetSetGaugeConfig_OnSetNeedlePivot( _this, _Const0020 );
+  WidgetSetGaugeConfig_OnSetNeedlePivot( _this, _Const0028 );
   WidgetSetGaugeConfig_OnSetNeedle( _this, EwLoadResource( &WidgetSetGaugeNeedleMedium, 
   ResourcesBitmap ));
-  WidgetSetGaugeConfig_OnSetCenterOffset( _this, _Const0021 );
+  WidgetSetGaugeConfig_OnSetCenterOffset( _this, _Const0029 );
   WidgetSetGaugeConfig_OnSetScale( _this, EwLoadResource( &WidgetSetGaugeTrackMedium, 
   ResourcesBitmap ));
-  WidgetSetGaugeConfig_OnSetWidgetMinSize( _this, _Const0022 );
+  WidgetSetGaugeConfig_OnSetWidgetMinSize( _this, _Const002A );
 }
 
 /* Table with links to derived variants of the auto object : 'Application::Gauge_custom' */
@@ -859,5 +950,29 @@ EW_RES_WITHOUT_VARIANTS( ApplicationPushButtonIcon )
 
 /* Table with links to derived variants of the bitmap resource : 'Application::Bitmap' */
 EW_RES_WITHOUT_VARIANTS( ApplicationBitmap )
+
+/* Include a file containing the bitmap resource : 'Application::REDLED' */
+#include "_ApplicationREDLED.h"
+
+/* Table with links to derived variants of the bitmap resource : 'Application::REDLED' */
+EW_RES_WITHOUT_VARIANTS( ApplicationREDLED )
+
+/* Include a file containing the bitmap resource : 'Application::GREENLED' */
+#include "_ApplicationGREENLED.h"
+
+/* Table with links to derived variants of the bitmap resource : 'Application::GREENLED' */
+EW_RES_WITHOUT_VARIANTS( ApplicationGREENLED )
+
+/* Include a file containing the bitmap resource : 'Application::BLUELED' */
+#include "_ApplicationBLUELED.h"
+
+/* Table with links to derived variants of the bitmap resource : 'Application::BLUELED' */
+EW_RES_WITHOUT_VARIANTS( ApplicationBLUELED )
+
+/* Include a file containing the bitmap resource : 'Application::OFFLED' */
+#include "_ApplicationOFFLED.h"
+
+/* Table with links to derived variants of the bitmap resource : 'Application::OFFLED' */
+EW_RES_WITHOUT_VARIANTS( ApplicationOFFLED )
 
 /* Embedded Wizard */
