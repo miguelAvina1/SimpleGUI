@@ -305,7 +305,7 @@ int DeviceDriver_ProcessData( void )
   }
 
 
-#ifdef _ApplicationDeviceClass__UpdateHardButtonCounter_
+#ifdef _ApplicationDeviceClass__UpdateGaugeValue_
   BaseType_t retVal;
 
 
@@ -316,11 +316,22 @@ int DeviceDriver_ProcessData( void )
 	  }
 
 	  ApplicationDeviceClass__UpdateGaugeValue(DeviceObject, sensorsData.potValue);
+	  ApplicationDeviceClass__UpdateTactileSwitch(DeviceObject, sensorsData.userButtonState );
+	  ApplicationDeviceClass__UpdateTouchSwitch(DeviceObject, sensorsData.touchButtonState );
+
 	  needUpdate = 1;
+
+
 
   }
 
 #endif
+
+
+
+
+
+
 
 
 

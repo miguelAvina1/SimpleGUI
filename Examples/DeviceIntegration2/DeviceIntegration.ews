@@ -1,10 +1,10 @@
 $version 1.0
 
-attr active = Application::Application;
+attr active = Application::Custom;
 attr callStackMonitor_Show = false;
 attr codeColSelect = false;
 attr codeFirstPos = <0,0>;
-attr codeInspector = Application::Application.DownSlot;
+attr codeInspector = Application::Custom.Slot;
 attr codeSelEnd = <0,0>;
 attr codeSelStart = <0,0>;
 attr connectInspectors = false;
@@ -51,18 +51,23 @@ view class Application::Application
 {
   attr codeColSelect = false;
   attr codeFirstPos = <0,0>;
-  attr codeInspector = DownSlot;
-  attr codeSelEnd = <0,0>;
-  attr codeSelStart = <0,0>;
+  attr codeInspector = onCounterEvent;
+  attr codeSelEnd = <31,0>;
+  attr codeSelStart = <25,0>;
   attr enableWireMode = false;
-  attr scrollTo = <-7,-103>;
+  attr scrollTo = <26,-88>;
   attr zoom = 1.0;
 }
 
 view class Application::Custom
 {
+  attr codeColSelect = false;
+  attr codeFirstPos = <0,0>;
+  attr codeInspector = Slot;
+  attr codeSelEnd = <0,0>;
+  attr codeSelStart = <0,0>;
   attr enableWireMode = false;
-  attr scrollTo = <-7,-7>;
+  attr scrollTo = <-124,-148>;
   attr zoom = 1.0;
 }
 
@@ -70,22 +75,10 @@ view class Application::DeviceClass
 {
   attr codeColSelect = false;
   attr codeFirstPos = <0,0>;
-  attr codeInspector = UpdateGaugeValue;
-  attr codeSelEnd = <23,4>;
-  attr codeSelStart = <23,4>;
+  attr codeInspector = UpdateTouchSwitch;
+  attr codeSelEnd = <42,8>;
+  attr codeSelStart = <42,8>;
   attr enableWireMode = false;
-  attr scrollTo = <-122,89>;
-  attr zoom = 1.0;
-}
-
-view class Core::KeyPressHandler
-{
-  attr codeColSelect = false;
-  attr codeFirstPos = <0,29>;
-  attr codeInspector = HandleEvent;
-  attr codeSelEnd = <0,0>;
-  attr codeSelStart = <0,0>;
-  attr enableWireMode = false;
-  attr scrollTo = <-7,-7>;
+  attr scrollTo = <-7,185>;
   attr zoom = 1.0;
 }

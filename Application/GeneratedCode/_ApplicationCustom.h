@@ -43,6 +43,7 @@
 #endif
 
 #include "_CoreGroup.h"
+#include "_CorePropertyObserver.h"
 #include "_ViewsImage.h"
 #include "_ViewsText.h"
 #include "_WidgetSetGauge.h"
@@ -52,6 +53,12 @@
 #ifndef _ApplicationCustom_
   EW_DECLARE_CLASS( ApplicationCustom )
 #define _ApplicationCustom_
+#endif
+
+/* Forward declaration of the class Application::DeviceClass */
+#ifndef _ApplicationDeviceClass_
+  EW_DECLARE_CLASS( ApplicationDeviceClass )
+#define _ApplicationDeviceClass_
 #endif
 
 /* Forward declaration of the class Core::DialogContext */
@@ -99,10 +106,15 @@
 
 /* Deklaration of class : 'Application::Custom' */
 EW_DEFINE_FIELDS( ApplicationCustom, CoreGroup )
+  EW_VARIABLE( Device,          ApplicationDeviceClass )
   EW_OBJECT  ( Image,           ViewsImage )
   EW_OBJECT  ( PushButton,      WidgetSetPushButton )
   EW_OBJECT  ( Text,            ViewsText )
   EW_OBJECT  ( Gauge,           WidgetSetGauge )
+  EW_OBJECT  ( TactileSwitch,   ViewsImage )
+  EW_OBJECT  ( TouchButton,     ViewsImage )
+  EW_OBJECT  ( HardSwitch,      CorePropertyObserver )
+  EW_OBJECT  ( TouchSwitch,     CorePropertyObserver )
 EW_END_OF_FIELDS( ApplicationCustom )
 
 /* Virtual Method Table (VMT) for the class : 'Application::Custom' */
@@ -134,6 +146,12 @@ EW_END_OF_METHODS( ApplicationCustom )
 
 /* 'C' function for method : 'Application::Custom.SlotMoveBack()' */
 void ApplicationCustom_SlotMoveBack( ApplicationCustom _this, XObject sender );
+
+/* 'C' function for method : 'Application::Custom.Slot()' */
+void ApplicationCustom_Slot( ApplicationCustom _this, XObject sender );
+
+/* 'C' function for method : 'Application::Custom.Slot1()' */
+void ApplicationCustom_Slot1( ApplicationCustom _this, XObject sender );
 
 #ifdef __cplusplus
   }

@@ -17,8 +17,6 @@ class Application : Core::Root
   $rect <250,300,430,340>
   inherited method Init()
   {
-
-
   }
 
   $rect <510,-70,710,-30>
@@ -364,12 +362,12 @@ class DeviceClass
   }
 
   // This object represents an individual system event.
-  $rect <230,440,430,480>
+  $rect <230,540,430,580>
   object Core::SystemEvent HardButtonEvent;
 
   // This method is intended to be called by the device to notify the GUI application \
   // about a particular system event.
-  $rect <20,450,220,490>
+  $rect <20,540,220,580>
   $output true
   method void TriggerHardButtonEvent()
   {
@@ -472,13 +470,13 @@ class DeviceClass
   // Example of an interface to read a device setting
   note group Note1
   {
-    attr Bounds = <10,230,580,380>;
+    attr Bounds = <10,230,580,470>;
   }
 
   // Example of an interface to react to a system event
   note group Note2
   {
-    attr Bounds = <10,390,470,490>;
+    attr Bounds = <10,490,470,590>;
   }
 
   // Example of a command to start an action on the device
@@ -509,13 +507,13 @@ class DeviceClass
   // system event handler are notified automatically.
   note legend Note6
   {
-    attr Bounds = <540,340,1200,440>;
+    attr Bounds = <700,480,1360,580>;
   }
 
   note arrow Note7
   {
-    attr Point1 = <470,390>;
-    attr Point2 = <540,390>;
+    attr Point1 = <480,550>;
+    attr Point2 = <700,550>;
   }
 
   // This method demonstrates the implementation of a device command. The GUI application \
@@ -585,7 +583,7 @@ class DeviceClass
   // https://doc.embedded-wizard.de/device-class-and-device-driver
   note legend Note12
   {
-    attr Bounds = <20,520,780,590>;
+    attr Bounds = <10,590,770,660>;
   }
 
   // This method is intended to be called by the device driver to notify the GUI \
@@ -608,7 +606,51 @@ class DeviceClass
   // This property represents a counter that is incremented by the device driver, \
   // while the hardware button of the board is pressed.
   $rect <270,320,470,360>
-  property int32 GaugeValue = 0;
+  property int32 GaugeValue = 75;
+
+  // This method is intended to be called by the device driver to notify the GUI \
+  // application about an alternation of its setting or state value.
+  $rect <20,370,270,410>
+  $output true
+  method void UpdateTactileSwitch( arg bool aNewValue )
+  {
+    // Only if the reported value does differ from the one stored currently in the property.
+    if ( aNewValue != pure TactileValue )
+    {
+      // Remember the new value in the internal memory of the property.
+      pure TactileValue = aNewValue;
+
+      // Notify all associated property observers.
+      notifyobservers ^TactileValue;
+    }
+  }
+
+  // This property represents a counter that is incremented by the device driver, \
+  // while the hardware button of the board is pressed.
+  $rect <280,370,480,410>
+  property bool TactileValue = false;
+
+  // This method is intended to be called by the device driver to notify the GUI \
+  // application about an alternation of its setting or state value.
+  $rect <20,420,270,460>
+  $output true
+  method void UpdateTouchSwitch( arg bool aNewValue )
+  {
+    // Only if the reported value does differ from the one stored currently in the property.
+    if ( aNewValue != pure TouchValue )
+    {
+      // Remember the new value in the internal memory of the property.
+      pure TouchValue = aNewValue;
+
+      // Notify all associated property observers.
+      notifyobservers ^TouchValue;
+    }
+  }
+
+  // This property represents a counter that is incremented by the device driver, \
+  // while the hardware button of the board is pressed.
+  $rect <280,420,480,460>
+  property bool TouchValue = false;
 }
 
 // This object represents an instance of the device interface implemented in the \
@@ -642,38 +684,6 @@ class Custom : Core::Group
   $rect <10,300,210,340>
   inherited property Bounds = <0,0,480,272>;
 
-  // To do:
-  // 
-  // - Adjust the visible size of your component (the thick blue border).
-  // 
-  // - The simplest way to compose the appearance of the component is to use the \
-  // 'Views' and 'Widget Sets' from the Gallery.
-  // 
-  // - To react to touch or keyboard events use the templates from the Gallery folder \
-  // 'Event Handlers'.
-  // 
-  // - To perform transitions (animations) use the templates from the Gallery folder \
-  // 'Effects'.
-  // 
-  // - To implement the interface of the component use the 'Property' template from \
-  // the Gallery folder 'Chora'.
-  // 
-  // - To store values use the 'Variable' and 'Array' templates available in the \
-  // Gallery folder 'Chora'.
-  // 
-  // - To implement behavior use the 'Method' and 'Slot Method' templates available \
-  // in the Gallery folder 'Chora'.
-  // 
-  // - In the method 'UpdateViewState()' you can put code to update the state of \
-  // views enclosed in your component.
-  // 
-  // - In the method 'UpdateLayout()' you can put code to perform sophisticated layout \
-  // calculation for enclosed views.
-  note legend Note1
-  {
-    attr Bounds = <670,150,1450,470>;
-  }
-
   $rect <20,20,160,60>
   object WidgetSet::PushButton PushButton
   {
@@ -706,6 +716,57 @@ class Custom : Core::Group
     preset Enabled = false;
     preset Outlet = ^Application::Device.GaugeValue;
     preset Appearance = Application::Gauge_custom;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image TactileSwitch
+  {
+    preset Bounds = <366,83,444,158>;
+    preset Bitmap = Application::PushButtonIcon;
+    preset Visible = false;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image TouchButton
+  {
+    preset Bounds = <372,174,438,249>;
+    preset Bitmap = Application::Bitmap;
+    preset Visible = false;
+  }
+
+  $rect <520,30,770,70>
+  object Core::PropertyObserver HardSwitch
+  {
+    preset OnEvent = Slot;
+    preset Outlet = ^Application::Device.TactileValue;
+  }
+
+  $rect <520,70,720,110>
+  slot Slot
+  {
+    TactileSwitch.Visible = Device.TactileValue;
+
+
+  }
+
+  // Variable to reference the device class the entire lifetime of the application. \
+  // This avoids that the device class will be deleted by the Garbage Collector.
+  $rect <520,-50,720,-10>
+  var Application::DeviceClass Device = Application::Device;
+
+  $rect <510,140,760,180>
+  object Core::PropertyObserver TouchSwitch
+  {
+    preset OnEvent = Slot;
+    preset Outlet = ^Application::Device.TouchValue;
+  }
+
+  $rect <520,190,720,230>
+  slot Slot1
+  {
+    TouchButton.Visible = Device.TouchValue;
+
+
   }
 
   $reorder Image 97
@@ -769,6 +830,30 @@ resource Resources::Bitmap GaugeNeedleCUstom
   attr framesize FrameSize;
   attr framedelay FrameDelay;
   attr bitmapformat Format = Native;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <20,-80,220,-40>
+$output false
+resource Resources::Bitmap PushButtonIcon
+{
+  attr bitmapfile FileName = C:\Users\migue\OneDrive\Documents\Embedded Wizard 10.00\LPCXpresso54628\Res\PushButton.png;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <10,-40,210,0>
+$output false
+resource Resources::Bitmap Bitmap
+{
+  attr bitmapfile FileName = C:\Users\migue\OneDrive\Documents\Embedded Wizard 10.00\LPCXpresso54628\Res\TouchButton.png;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
   attr bitmapdithering Dithering = Auto;
   attr bitmapmode Mode = Default;
 }

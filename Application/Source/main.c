@@ -46,12 +46,19 @@
 
 #include "fsl_i2c.h"
 
+#ifdef __GNUC__
+#define PACKED  __attribute__((__packed__))
+#endif
+
 #define I2C_BAUDRATE               100000U
 
 #define I2C_MASTER ((I2C_Type *)(I2C8_BASE))
 #define I2C_PAYLOAD_LENGTH            4U
 
 #define I2C_DATA_LENGTH            3U
+#define I2C_SLAVE_PAYLOAD_LENGTH            4U
+#define I2C_MASTER_PAYLOAD_LENGTH            4U
+
 #define I2C_MASTER_SLAVE_ADDR_7BIT 0x7EU
 
 
@@ -127,16 +134,38 @@ int main( void )
 
 #if EW_USE_FREE_RTOS == 1
 
-typedef union {
+typedef union {		// Payload from slave to master
 	struct PACKED {
 		uint16_t adc_val;
-		uint8_t btn1;
-		uint8_t btn2;
+		uint8_t tactile_switch;
+		uint8_t touch_button;
 	} data;
 	uint8_t payload_arr[4];
-} i2c_payload_t;
+} i2c_payload_slave_t;
 
+typedef union {
+	struct PACKED leds {
+		unsigned red_led : 1;
+		unsigned green_led : 1;
+		unsigned blue_led : 1;
+		unsigned reserved : 5;
+	} led_state_bit;
+	uint8_t leds_state;
+} leds_state_t;
 
+typedef struct {
+	uint8_t rgb_red;
+	uint8_t rgb_green;
+	uint8_t rgb_blue;
+} rgb_info_t;
+
+typedef union {		// Payload from slave to master
+	struct PACKED {
+		leds_state_t leds_state;	// 1 byte. Each bit is Active/Inactive
+		rgb_info_t rgb_info;  // Not implemented yet
+	} data;
+	uint8_t payload_arr[4];
+} i2c_payload_master_t;
 
 QueueHandle_t xQueueSensors = NULL;
 uint8_t g_master_txBuff[3] = {0x01, 0x02, 0x03};
@@ -237,9 +266,14 @@ static void SensingThread( void* arg )
 	sensorsInfo sensorsData;
 	BaseType_t retVal;
     i2c_master_config_t masterConfig;
-    i2c_payload_t I2C_Payload;
+
+    i2c_payload_slave_t I2C_Payload_slave;
+    i2c_payload_master_t I2C_Payload_master;
     status_t reVal        = kStatus_Fail;
 
+    I2C_Payload_master.data.leds_state.led_state_bit.red_led = 0U;
+    I2C_Payload_master.data.leds_state.led_state_bit.green_led = 0U;
+    I2C_Payload_master.data.leds_state.led_state_bit.blue_led = 1U;
 
 	srand(1); // Predefined seed
 
@@ -256,7 +290,7 @@ static void SensingThread( void* arg )
 
 		if (kStatus_Success == I2C_MasterStart(I2C_MASTER, I2C_MASTER_SLAVE_ADDR_7BIT, kI2C_Write))
 		{
-			reVal = I2C_MasterWriteBlocking(I2C_MASTER, g_master_txBuff, I2C_DATA_LENGTH, kI2C_TransferDefaultFlag);
+			reVal = I2C_MasterWriteBlocking(I2C_MASTER, I2C_Payload_master.payload_arr, I2C_MASTER_PAYLOAD_LENGTH, kI2C_TransferDefaultFlag);
 			if (reVal != kStatus_Success)
 			{
 			}
@@ -274,7 +308,7 @@ static void SensingThread( void* arg )
 		{
 		}
 
-		reVal = I2C_MasterReadBlocking(I2C_MASTER, I2C_Payload.payload_arr, I2C_PAYLOAD_LENGTH, kI2C_TransferDefaultFlag);
+		reVal = I2C_MasterReadBlocking(I2C_MASTER, I2C_Payload_slave.payload_arr, I2C_SLAVE_PAYLOAD_LENGTH, kI2C_TransferDefaultFlag);
 		if (reVal != kStatus_Success)
 		{
 		}
@@ -287,9 +321,9 @@ static void SensingThread( void* arg )
 		// FIlling randomly
 		// I2C_MasterInit(base, masterConfig, srcClock_Hz)
 
-		sensorsData.potValue = get_0to100Scale(I2C_Payload.data.adc_val);
-		sensorsData.touchButtonState = (uint8_t) (rand() % 2);
-		sensorsData.touchButtonState = (uint8_t) (rand() % 2);
+		sensorsData.potValue = get_0to100Scale(I2C_Payload_slave.data.adc_val);
+		sensorsData.userButtonState = I2C_Payload_slave.data.tactile_switch;
+		sensorsData.touchButtonState = I2C_Payload_slave.data.touch_button;
 
 
 		retVal = xQueueSendToFront(xQueueSensors, (void *) &sensorsData, 10);

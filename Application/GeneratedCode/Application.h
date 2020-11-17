@@ -52,6 +52,12 @@ EW_DECLARE_BITMAP_RES( ApplicationCustomBackground )
 /* Font resource : 'Application::Font' */
 EW_DECLARE_FONT_RES( ApplicationFont )
 
+/* Bitmap resource : 'Application::PushButtonIcon' */
+EW_DECLARE_BITMAP_RES( ApplicationPushButtonIcon )
+
+/* Bitmap resource : 'Application::Bitmap' */
+EW_DECLARE_BITMAP_RES( ApplicationBitmap )
+
 /* Forward declaration of the class WidgetSet::GaugeConfig */
 #ifndef _WidgetSetGaugeConfig_
   EW_DECLARE_CLASS( WidgetSetGaugeConfig )

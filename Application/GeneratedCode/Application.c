@@ -98,10 +98,12 @@ static const XRect _Const0019 = {{ 101, 4 }, { 360, 75 }};
 static const XStringRes _Const001A = { _StringsDefault0, 0x009F };
 static const XColor _Const001B = { 0x03, 0x33, 0x99, 0xFF };
 static const XRect _Const001C = {{ 138, 75 }, { 322, 242 }};
-static const XColor _Const001D = { 0x64, 0x81, 0xD3, 0xFF };
-static const XPoint _Const001E = { -39, 12 };
-static const XPoint _Const001F = { 0, 10 };
-static const XPoint _Const0020 = { 171, 151 };
+static const XRect _Const001D = {{ 366, 83 }, { 444, 158 }};
+static const XRect _Const001E = {{ 372, 174 }, { 438, 249 }};
+static const XColor _Const001F = { 0x64, 0x81, 0xD3, 0xFF };
+static const XPoint _Const0020 = { -39, 12 };
+static const XPoint _Const0021 = { 0, 10 };
+static const XPoint _Const0022 = { 171, 151 };
 
 /* This is an inline code block. */
 /* include the device driver header file to get access for the device class */
@@ -527,6 +529,44 @@ void ApplicationDeviceClass__UpdateGaugeValue( void* _this, XInt32 aNewValue )
   ApplicationDeviceClass_UpdateGaugeValue((ApplicationDeviceClass)_this, aNewValue );
 }
 
+/* This method is intended to be called by the device driver to notify the GUI application 
+   about an alternation of its setting or state value. */
+void ApplicationDeviceClass_UpdateTactileSwitch( ApplicationDeviceClass _this, XBool 
+  aNewValue )
+{
+  if ( aNewValue != _this->TactileValue )
+  {
+    _this->TactileValue = aNewValue;
+    EwNotifyRefObservers( EwNewRef( _this, ApplicationDeviceClass_OnGetTactileValue, 
+      ApplicationDeviceClass_OnSetTactileValue ), 0 );
+  }
+}
+
+/* Wrapper function for the non virtual method : 'Application::DeviceClass.UpdateTactileSwitch()' */
+void ApplicationDeviceClass__UpdateTactileSwitch( void* _this, XBool aNewValue )
+{
+  ApplicationDeviceClass_UpdateTactileSwitch((ApplicationDeviceClass)_this, aNewValue );
+}
+
+/* This method is intended to be called by the device driver to notify the GUI application 
+   about an alternation of its setting or state value. */
+void ApplicationDeviceClass_UpdateTouchSwitch( ApplicationDeviceClass _this, XBool 
+  aNewValue )
+{
+  if ( aNewValue != _this->TouchValue )
+  {
+    _this->TouchValue = aNewValue;
+    EwNotifyRefObservers( EwNewRef( _this, ApplicationDeviceClass_OnGetTouchValue, 
+      ApplicationDeviceClass_OnSetTouchValue ), 0 );
+  }
+}
+
+/* Wrapper function for the non virtual method : 'Application::DeviceClass.UpdateTouchSwitch()' */
+void ApplicationDeviceClass__UpdateTouchSwitch( void* _this, XBool aNewValue )
+{
+  ApplicationDeviceClass_UpdateTouchSwitch((ApplicationDeviceClass)_this, aNewValue );
+}
+
 /* Default onget method for the property 'HardButtonCounter' */
 XInt32 ApplicationDeviceClass_OnGetHardButtonCounter( ApplicationDeviceClass _this )
 {
@@ -557,6 +597,32 @@ void ApplicationDeviceClass_OnSetGaugeValue( ApplicationDeviceClass _this, XInt3
   value )
 {
   _this->GaugeValue = value;
+}
+
+/* Default onget method for the property 'TactileValue' */
+XBool ApplicationDeviceClass_OnGetTactileValue( ApplicationDeviceClass _this )
+{
+  return _this->TactileValue;
+}
+
+/* Default onset method for the property 'TactileValue' */
+void ApplicationDeviceClass_OnSetTactileValue( ApplicationDeviceClass _this, XBool 
+  value )
+{
+  _this->TactileValue = value;
+}
+
+/* Default onget method for the property 'TouchValue' */
+XBool ApplicationDeviceClass_OnGetTouchValue( ApplicationDeviceClass _this )
+{
+  return _this->TouchValue;
+}
+
+/* Default onset method for the property 'TouchValue' */
+void ApplicationDeviceClass_OnSetTouchValue( ApplicationDeviceClass _this, XBool 
+  value )
+{
+  _this->TouchValue = value;
 }
 
 /* Variants derived from the class : 'Application::DeviceClass' */
@@ -597,6 +663,10 @@ void ApplicationCustom__Init( ApplicationCustom _this, XObject aLink, XHandle aA
   WidgetSetPushButton__Init( &_this->PushButton, &_this->_XObject, 0 );
   ViewsText__Init( &_this->Text, &_this->_XObject, 0 );
   WidgetSetGauge__Init( &_this->Gauge, &_this->_XObject, 0 );
+  ViewsImage__Init( &_this->TactileSwitch, &_this->_XObject, 0 );
+  ViewsImage__Init( &_this->TouchButton, &_this->_XObject, 0 );
+  CorePropertyObserver__Init( &_this->HardSwitch, &_this->_XObject, 0 );
+  CorePropertyObserver__Init( &_this->TouchSwitch, &_this->_XObject, 0 );
 
   /* Setup the VMT pointer */
   _this->_VMT = EW_CLASS( ApplicationCustom );
@@ -611,10 +681,16 @@ void ApplicationCustom__Init( ApplicationCustom _this, XObject aLink, XHandle aA
   ViewsText_OnSetColor( &_this->Text, _Const001B );
   CoreRectView__OnSetBounds( &_this->Gauge, _Const001C );
   CoreGroup_OnSetEnabled((CoreGroup)&_this->Gauge, 0 );
+  CoreRectView__OnSetBounds( &_this->TactileSwitch, _Const001D );
+  ViewsImage_OnSetVisible( &_this->TactileSwitch, 0 );
+  CoreRectView__OnSetBounds( &_this->TouchButton, _Const001E );
+  ViewsImage_OnSetVisible( &_this->TouchButton, 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->Image ), 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->PushButton ), 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->Text ), 0 );
   CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->Gauge ), 0 );
+  CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->TactileSwitch ), 0 );
+  CoreGroup_Add((CoreGroup)_this, ((CoreView)&_this->TouchButton ), 0 );
   ViewsImage_OnSetBitmap( &_this->Image, EwLoadResource( &ApplicationCustomBackground, 
   ResourcesBitmap ));
   _this->PushButton.OnActivate = EwNewSlot( _this, ApplicationCustom_SlotMoveBack );
@@ -625,6 +701,19 @@ void ApplicationCustom__Init( ApplicationCustom _this, XObject aLink, XHandle aA
   ApplicationDeviceClass ), ApplicationDeviceClass_OnGetGaugeValue, ApplicationDeviceClass_OnSetGaugeValue ));
   WidgetSetGauge_OnSetAppearance( &_this->Gauge, EwGetAutoObject( &ApplicationGauge_custom, 
   WidgetSetGaugeConfig ));
+  ViewsImage_OnSetBitmap( &_this->TactileSwitch, EwLoadResource( &ApplicationPushButtonIcon, 
+  ResourcesBitmap ));
+  ViewsImage_OnSetBitmap( &_this->TouchButton, EwLoadResource( &ApplicationBitmap, 
+  ResourcesBitmap ));
+  _this->HardSwitch.OnEvent = EwNewSlot( _this, ApplicationCustom_Slot );
+  CorePropertyObserver_OnSetOutlet( &_this->HardSwitch, EwNewRef( EwGetAutoObject( 
+  &ApplicationDevice, ApplicationDeviceClass ), ApplicationDeviceClass_OnGetTactileValue, 
+  ApplicationDeviceClass_OnSetTactileValue ));
+  _this->Device = EwGetAutoObject( &ApplicationDevice, ApplicationDeviceClass );
+  _this->TouchSwitch.OnEvent = EwNewSlot( _this, ApplicationCustom_Slot1 );
+  CorePropertyObserver_OnSetOutlet( &_this->TouchSwitch, EwNewRef( EwGetAutoObject( 
+  &ApplicationDevice, ApplicationDeviceClass ), ApplicationDeviceClass_OnGetTouchValue, 
+  ApplicationDeviceClass_OnSetTouchValue ));
 }
 
 /* Re-Initializer for the class 'Application::Custom' */
@@ -638,6 +727,10 @@ void ApplicationCustom__ReInit( ApplicationCustom _this )
   WidgetSetPushButton__ReInit( &_this->PushButton );
   ViewsText__ReInit( &_this->Text );
   WidgetSetGauge__ReInit( &_this->Gauge );
+  ViewsImage__ReInit( &_this->TactileSwitch );
+  ViewsImage__ReInit( &_this->TouchButton );
+  CorePropertyObserver__ReInit( &_this->HardSwitch );
+  CorePropertyObserver__ReInit( &_this->TouchSwitch );
 }
 
 /* Finalizer method for the class 'Application::Custom' */
@@ -651,6 +744,10 @@ void ApplicationCustom__Done( ApplicationCustom _this )
   WidgetSetPushButton__Done( &_this->PushButton );
   ViewsText__Done( &_this->Text );
   WidgetSetGauge__Done( &_this->Gauge );
+  ViewsImage__Done( &_this->TactileSwitch );
+  ViewsImage__Done( &_this->TouchButton );
+  CorePropertyObserver__Done( &_this->HardSwitch );
+  CorePropertyObserver__Done( &_this->TouchSwitch );
 
   /* Don't forget to deinitialize the super class ... */
   CoreGroup__Done( &_this->_Super );
@@ -667,12 +764,30 @@ void ApplicationCustom_SlotMoveBack( ApplicationCustom _this, XObject sender )
     EwNullSlot, EwNullSlot, 0 );
 }
 
+/* 'C' function for method : 'Application::Custom.Slot()' */
+void ApplicationCustom_Slot( ApplicationCustom _this, XObject sender )
+{
+  /* Dummy expressions to avoid the 'C' warning 'unused argument'. */
+  EW_UNUSED_ARG( sender );
+
+  ViewsImage_OnSetVisible( &_this->TactileSwitch, _this->Device->TactileValue );
+}
+
+/* 'C' function for method : 'Application::Custom.Slot1()' */
+void ApplicationCustom_Slot1( ApplicationCustom _this, XObject sender )
+{
+  /* Dummy expressions to avoid the 'C' warning 'unused argument'. */
+  EW_UNUSED_ARG( sender );
+
+  ViewsImage_OnSetVisible( &_this->TouchButton, _this->Device->TouchValue );
+}
+
 /* Variants derived from the class : 'Application::Custom' */
 EW_DEFINE_CLASS_VARIANTS( ApplicationCustom )
 EW_END_OF_CLASS_VARIANTS( ApplicationCustom )
 
 /* Virtual Method Table (VMT) for the class : 'Application::Custom' */
-EW_DEFINE_CLASS( ApplicationCustom, CoreGroup, Image, Image, Image, Image, _None, 
+EW_DEFINE_CLASS( ApplicationCustom, CoreGroup, Device, Image, Image, Image, _None, 
                  _None, "Application::Custom" )
   CoreRectView_initLayoutContext,
   CoreView_GetRoot,
@@ -715,22 +830,34 @@ void ApplicationGauge_custom__Init( WidgetSetGaugeConfig _this )
   WidgetSetGaugeConfig_OnSetSwingElastic( _this, 0 );
   WidgetSetGaugeConfig_OnSetSwingDuration( _this, 300 );
   WidgetSetGaugeConfig_OnSetTrackLeftRoundedStart( _this, 1 );
-  WidgetSetGaugeConfig_OnSetTrackLeftColor( _this, _Const001D );
+  WidgetSetGaugeConfig_OnSetTrackLeftColor( _this, _Const001F );
   WidgetSetGaugeConfig_OnSetTrackLeftThickness( _this, 21.000000f );
   WidgetSetGaugeConfig_OnSetTrackLeftRadius( _this, 70.000000f );
   WidgetSetGaugeConfig_OnSetNeedleMaxAngle( _this, -45.000000f );
   WidgetSetGaugeConfig_OnSetNeedleMinAngle( _this, 225.000000f );
-  WidgetSetGaugeConfig_OnSetNeedlePivot( _this, _Const001E );
+  WidgetSetGaugeConfig_OnSetNeedlePivot( _this, _Const0020 );
   WidgetSetGaugeConfig_OnSetNeedle( _this, EwLoadResource( &WidgetSetGaugeNeedleMedium, 
   ResourcesBitmap ));
-  WidgetSetGaugeConfig_OnSetCenterOffset( _this, _Const001F );
+  WidgetSetGaugeConfig_OnSetCenterOffset( _this, _Const0021 );
   WidgetSetGaugeConfig_OnSetScale( _this, EwLoadResource( &WidgetSetGaugeTrackMedium, 
   ResourcesBitmap ));
-  WidgetSetGaugeConfig_OnSetWidgetMinSize( _this, _Const0020 );
+  WidgetSetGaugeConfig_OnSetWidgetMinSize( _this, _Const0022 );
 }
 
 /* Table with links to derived variants of the auto object : 'Application::Gauge_custom' */
 EW_DEFINE_AUTOOBJECT_VARIANTS( ApplicationGauge_custom )
 EW_END_OF_AUTOOBJECT_VARIANTS( ApplicationGauge_custom )
+
+/* Include a file containing the bitmap resource : 'Application::PushButtonIcon' */
+#include "_ApplicationPushButtonIcon.h"
+
+/* Table with links to derived variants of the bitmap resource : 'Application::PushButtonIcon' */
+EW_RES_WITHOUT_VARIANTS( ApplicationPushButtonIcon )
+
+/* Include a file containing the bitmap resource : 'Application::Bitmap' */
+#include "_ApplicationBitmap.h"
+
+/* Table with links to derived variants of the bitmap resource : 'Application::Bitmap' */
+EW_RES_WITHOUT_VARIANTS( ApplicationBitmap )
 
 /* Embedded Wizard */

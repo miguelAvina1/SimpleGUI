@@ -56,6 +56,8 @@ EW_DEFINE_FIELDS( ApplicationDeviceClass, XObject )
   EW_OBJECT  ( HardButtonEvent, CoreSystemEvent )
   EW_PROPERTY( HardButtonCounter, XInt32 )
   EW_PROPERTY( GaugeValue,      XInt32 )
+  EW_PROPERTY( TouchValue,      XBool )
+  EW_PROPERTY( TactileValue,    XBool )
   EW_PROPERTY( LedStatus,       XBool )
 EW_END_OF_FIELDS( ApplicationDeviceClass )
 
@@ -104,6 +106,28 @@ void ApplicationDeviceClass__UpdateGaugeValue( void* _this, XInt32 aNewValue );
 /* The following define announces the presence of the method Application::DeviceClass.UpdateGaugeValue(). */
 #define _ApplicationDeviceClass__UpdateGaugeValue_
 
+/* This method is intended to be called by the device driver to notify the GUI application 
+   about an alternation of its setting or state value. */
+void ApplicationDeviceClass_UpdateTactileSwitch( ApplicationDeviceClass _this, XBool 
+  aNewValue );
+
+/* Wrapper function for the non virtual method : 'Application::DeviceClass.UpdateTactileSwitch()' */
+void ApplicationDeviceClass__UpdateTactileSwitch( void* _this, XBool aNewValue );
+
+/* The following define announces the presence of the method Application::DeviceClass.UpdateTactileSwitch(). */
+#define _ApplicationDeviceClass__UpdateTactileSwitch_
+
+/* This method is intended to be called by the device driver to notify the GUI application 
+   about an alternation of its setting or state value. */
+void ApplicationDeviceClass_UpdateTouchSwitch( ApplicationDeviceClass _this, XBool 
+  aNewValue );
+
+/* Wrapper function for the non virtual method : 'Application::DeviceClass.UpdateTouchSwitch()' */
+void ApplicationDeviceClass__UpdateTouchSwitch( void* _this, XBool aNewValue );
+
+/* The following define announces the presence of the method Application::DeviceClass.UpdateTouchSwitch(). */
+#define _ApplicationDeviceClass__UpdateTouchSwitch_
+
 /* Default onget method for the property 'HardButtonCounter' */
 XInt32 ApplicationDeviceClass_OnGetHardButtonCounter( ApplicationDeviceClass _this );
 
@@ -119,6 +143,20 @@ XInt32 ApplicationDeviceClass_OnGetGaugeValue( ApplicationDeviceClass _this );
 
 /* Default onset method for the property 'GaugeValue' */
 void ApplicationDeviceClass_OnSetGaugeValue( ApplicationDeviceClass _this, XInt32 
+  value );
+
+/* Default onget method for the property 'TactileValue' */
+XBool ApplicationDeviceClass_OnGetTactileValue( ApplicationDeviceClass _this );
+
+/* Default onset method for the property 'TactileValue' */
+void ApplicationDeviceClass_OnSetTactileValue( ApplicationDeviceClass _this, XBool 
+  value );
+
+/* Default onget method for the property 'TouchValue' */
+XBool ApplicationDeviceClass_OnGetTouchValue( ApplicationDeviceClass _this );
+
+/* Default onset method for the property 'TouchValue' */
+void ApplicationDeviceClass_OnSetTouchValue( ApplicationDeviceClass _this, XBool 
   value );
 
 #ifdef __cplusplus
